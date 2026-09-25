@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub 中英对照手册 · 看不懂英文就查这个</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2128;
+    --border:#30363d; --text:#e6edf3; --muted:#8b949e; --dim:#6e7681;
+    --blue:#58a6ff; --green:#3fb950; --orange:#d29922; --red:#f85149;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.75;-webkit-font-smoothing:antialiased}
+  ::selection{background:#1f6feb55}
+  .wrap{display:flex;min-height:100vh}
+  aside{width:250px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--border);position:sticky;top:0;height:100vh;overflow-y:auto;padding:26px 0 60px}
+  aside::-webkit-scrollbar{width:8px}
+  aside::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+  .brand{padding:0 22px 18px;border-bottom:1px solid var(--border);margin-bottom:14px}
+  .brand h1{font-size:16px;font-weight:600}
+  .brand p{font-size:12px;color:var(--dim);margin-top:4px}
+  nav a{display:block;padding:7px 22px;font-size:13.5px;color:var(--muted);text-decoration:none;border-left:2px solid transparent;transition:.15s}
+  nav a:hover{color:var(--text);background:#ffffff08}
+  nav a.on{color:var(--blue);border-left-color:var(--blue);background:#58a6ff0f}
+  nav .grp{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.8px;padding:16px 22px 6px;font-weight:600}
+  main{flex:1;min-width:0;padding:48px 52px 110px;max-width:940px}
+  section{margin-bottom:56px;scroll-margin-top:20px}
+  h2{font-size:22px;font-weight:600;margin-bottom:8px;padding-bottom:11px;border-bottom:1px solid var(--border)}
+  h2 .num{color:var(--blue);font-family:var(--mono);font-size:16px;margin-right:9px;font-weight:500}
+  h3{font-size:16px;font-weight:600;margin:26px 0 11px}
+  p{margin-bottom:13px;color:#c9d1d9}
+  strong{color:#fff;font-weight:600}
+  a{color:var(--blue)}
+  .lead{font-size:15px;color:var(--muted);margin-bottom:22px}
+  code{font-family:var(--mono);font-size:13px;background:#ffffff0f;border:1px solid var(--border);padding:1.5px 6px;border-radius:5px;color:#79c0ff}
+  .cb{position:relative;margin:15px 0 18px;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:#010409}
+  .cb .bar{display:flex;align-items:center;justify-content:space-between;padding:7px 12px;background:var(--panel2);border-bottom:1px solid var(--border)}
+  .cb .bar span{font-size:11.5px;color:var(--dim);font-family:var(--mono)}
+  .cb button{background:transparent;border:1px solid var(--border);color:var(--muted);font-size:11.5px;padding:3px 10px;border-radius:6px;cursor:pointer;font-family:var(--sans);transition:.15s}
+  .cb button:hover{border-color:var(--blue);color:var(--blue)}
+  .cb button.ok{border-color:var(--green);color:var(--green)}
+  pre{padding:14px 16px;overflow-x:auto;font-family:var(--mono);font-size:13px;line-height:1.8}
+
+  /* 对照表核心样式 */
+  .map{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin:16px 0 22px}
+  .row{display:grid;grid-template-columns:1.05fr 1.15fr 1.5fr;border-bottom:1px solid #21262d;font-size:13.5px}
+  .row:last-child{border-bottom:none}
+  .row.head{background:var(--panel2);font-size:12.5px;color:var(--muted);font-weight:600;letter-spacing:.3px}
+  .row:hover:not(.head){background:#ffffff05}
+  .c{padding:10px 14px;border-right:1px solid #21262d;display:flex;align-items:center;min-height:42px}
+  .c:last-child{border-right:none}
+  .en{font-family:var(--mono);font-size:12.5px;color:#79c0ff;word-break:break-word}
+  .zh{color:#e6edf3}
+  .note{color:var(--muted);font-size:13px;line-height:1.65}
+  .must{color:var(--red);font-weight:600}
+  .ok{color:var(--green);font-weight:600}
+
+  .tw{overflow-x:auto;margin:15px 0 20px;border:1px solid var(--border);border-radius:10px}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th{text-align:left;padding:10px 14px;background:var(--panel2);color:var(--muted);font-weight:600;font-size:12.5px;border-bottom:1px solid var(--border);white-space:nowrap}
+  td{padding:9px 14px;border-bottom:1px solid #21262d;color:#c9d1d9;vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:#ffffff05}
+
+  .tip,.warn,.danger,.okbox{border-radius:10px;padding:13px 17px;margin:17px 0;font-size:14px;border-left:3px solid;line-height:1.7}
+  .tip{background:#58a6ff0d;border-color:var(--blue)}
+  .tip b{color:var(--blue)}
+  .warn{background:#d299220d;border-color:var(--orange)}
+  .warn b{color:var(--orange)}
+  .danger{background:#f851490d;border-color:var(--red)}
+  .danger b{color:var(--red)}
+  .okbox{background:#3fb9500d;border-color:var(--green)}
+  .okbox b{color:var(--green)}
+  .tip p,.warn p,.danger p,.okbox p{margin:0}
+  .tip p+p,.warn p+p,.danger p+p{margin-top:7px}
+
+  .steps{counter-reset:s;margin:18px 0}
+  .step{position:relative;padding:0 0 24px 42px;border-left:2px solid var(--border);margin-left:13px}
+  .step:last-child{border-left-color:transparent;padding-bottom:0}
+  .step::before{counter-increment:s;content:counter(s);position:absolute;left:-14px;top:-2px;width:26px;height:26px;background:var(--panel2);border:2px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--blue);font-family:var(--mono)}
+  .step h4{margin:0 0 7px;color:#fff;font-size:14.5px;font-weight:600}
+  .step p:last-child{margin-bottom:0}
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:13px;margin:18px 0}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:15px 17px}
+  .card h4{margin:0 0 6px;color:#fff;font-size:14px;font-weight:600}
+  .card p{font-size:13px;color:var(--muted);margin:0;line-height:1.65}
+  .card .big{font-size:22px;font-weight:600;color:var(--blue);font-family:var(--mono)}
+
+  footer{margin-top:70px;padding-top:24px;border-top:1px solid var(--border);font-size:13px;color:var(--dim);text-align:center;line-height:1.9}
+  .top{position:fixed;right:26px;bottom:26px;width:40px;height:40px;background:var(--panel2);border:1px solid var(--border);border-radius:50%;color:var(--muted);cursor:pointer;display:none;align-items:center;justify-content:center;font-size:16px}
+  .top:hover{border-color:var(--blue);color:var(--blue)}
+  .top.show{display:flex}
+  @media(max-width:900px){
+    aside{display:none}
+    main{padding:28px 18px 90px}
+    .row{grid-template-columns:1fr;border-bottom:2px solid var(--border)}
+    .c{border-right:none;border-bottom:1px solid #21262d}
+    .c:last-child{border-bottom:none}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+<aside>
+  <div class="brand">
+    <h1>GitHub 中英对照手册</h1>
+    <p>看不懂英文就查这个</p>
+  </div>
+  <nav id="nav">
+    <a href="#s0">先看这里</a>
+    <a href="#s1">三种翻译方案</a>
+    <div class="grp">马上要用</div>
+    <a href="#s2">新建仓库页</a>
+    <a href="#s3">Pages 设置页</a>
+    <div class="grp">日常对照</div>
+    <a href="#s4">顶部导航栏</a>
+    <a href="#s5">仓库首页</a>
+    <a href="#s6">Settings 侧边栏</a>
+    <div class="grp">词典</div>
+    <a href="#s7">常用术语小词典</a>
+    <a href="#s8">常见英文提示语</a>
+    <a href="#s9">官方中文资源</a>
+  </nav>
+</aside>
+
+<main>
+
+<section id="s0">
+  <h2><span class="num">00</span>先看这里</h2>
+  <div class="danger">
+    <p><b>重要事实：GitHub 没有官方中文界面。</b>GitHub 官方在 2016 年就取消了对英文以外界面语言的支持。网上教你"进 Settings → Appearance 选简体中文"的教程<strong>是错的</strong>——那个地方确实有语言选项，但它只管邮件通知和推荐内容的语言，<strong>完全不会改变页面的按钮和菜单</strong>。</p>
+  </div>
+  <p>所以"把 GitHub 改成中文"这件事，只能靠你自己这边的工具。有三种，下面第三种就是这份手册。</p>
+</section>
+
+<section id="s1">
+  <h2><span class="num">01</span>三种翻译方案</h2>
+
+  <div class="cards">
+    <div class="card">
+      <h4>① 浏览器整页翻译</h4>
+      <p class="big">最快</p>
+      <p>右键 → 翻译为中文。按钮菜单立刻变中文。缺点是技术术语可能翻得别扭。</p>
+    </div>
+    <div class="card">
+      <h4>② 汉化插件</h4>
+      <p class="big">最彻底</p>
+      <p>装 Tampermonkey 扩展 + github-chinese 脚本，全站几乎完整汉化。需要多装两个东西。</p>
+    </div>
+    <div class="card">
+      <h4>③ 这份对照手册</h4>
+      <p class="big">最准</p>
+      <p>把关键页面的英文逐项对照中文说明。翻译不会出错，操作时对着找即可。</p>
+    </div>
+  </div>
+
+  <h3>方案一详细步骤（推荐先用这个）</h3>
+  <p>以 Windows 自带的 <strong>Edge 浏览器</strong>为例：</p>
+  <div class="steps">
+    <div class="step">
+      <h4>打开 github.com 并登录</h4>
+      <p>用 Edge 打开 <a href="https://github.com" target="_blank">github.com</a>，登录你的账号。</p>
+    </div>
+    <div class="step">
+      <h4>触发翻译</h4>
+      <p>在页面<strong>空白处点右键</strong> → 选择「<strong>翻译为中文</strong>」。</p>
+      <p>或者看地址栏最右侧，会出现一个翻译小图标，点它 → 选中文。</p>
+    </div>
+    <div class="step">
+      <h4>设置自动翻译</h4>
+      <p>翻译后地址栏会提示，勾选「始终翻译此网站」，以后打开 GitHub 自动变中文。</p>
+    </div>
+  </div>
+  <div class="tip">
+    <p><b>Chrome 用户：</b>操作一样。右键 → 「翻译成中文」。如果没反应，进 <code>设置 → 语言</code>，添加「中文（简体）」并拖到最上面。</p>
+  </div>
+
+  <h3>方案二：汉化插件（想彻底汉化再折腾）</h3>
+  <div class="steps">
+    <div class="step">
+      <h4>装脚本管理器</h4>
+      <p>浏览器扩展商店搜 <strong>Tampermonkey</strong>（篡改猴），装上。Chrome、Edge 都有。</p>
+    </div>
+    <div class="step">
+      <h4>装汉化脚本</h4>
+      <p>在 greasyfork.org 搜 <strong>github-chinese</strong>，点安装，Tampermonkey 会弹窗确认。</p>
+    </div>
+    <div class="step">
+      <h4>刷新 GitHub</h4>
+      <p>回到 github.com 刷新页面，导航栏、按钮、菜单就都变中文了。</p>
+    </div>
+  </div>
+  <div class="warn">
+    <p><b>注意：</b>这类脚本靠解析网页结构来替换文字，GitHub 前端一改版就可能局部失效，通常等作者更新即可。另外要认准知名脚本，别乱装来路不明的。</p>
+  </div>
+</section>
+
+<section id="s2">
+  <h2><span class="num">02</span>新建仓库页 · 逐项对照</h2>
+  <p class="lead">就是你马上要用的那一页。地址：github.com/new</p>
+
+  <div class="map">
+    <div class="row head">
+      <div class="c">页面上的英文</div>
+      <div class="c">中文意思</div>
+      <div class="c">你该怎么做</div>
+    </div>
+    <div class="row">
+      <div class="c en">Repository name</div>
+      <div class="c zh">仓库名称 <span class="must">（必填）</span></div>
+      <div class="c note">填 <code>github-guide</code></div>
+    </div>
+    <div class="row">
+      <div class="c en">Description <span style="color:#6e7681">(optional)</span></div>
+      <div class="c zh">项目描述（选填）</div>
+      <div class="c note">可以不填，或写「GitHub 学习手册」</div>
+    </div>
+    <div class="row">
+      <div class="c en">Public</div>
+      <div class="c zh">公开</div>
+      <div class="c note"><span class="ok">选这个</span>，免费账号发 Pages 必须公开</div>
+    </div>
+    <div class="row">
+      <div class="c en">Private</div>
+      <div class="c zh">私有</div>
+      <div class="c note">别选。私有没有 Pages 功能</div>
+    </div>
+    <div class="row">
+      <div class="c en">Add a README file</div>
+      <div class="c zh">添加说明文件</div>
+      <div class="c note"><span class="must">不要勾！</span></div>
+    </div>
+    <div class="row">
+      <div class="c en">Add .gitignore</div>
+      <div class="c zh">添加忽略文件模板</div>
+      <div class="c note"><span class="must">不要勾！</span>（你本地已经有了）</div>
+    </div>
+    <div class="row">
+      <div class="c en">Choose a license</div>
+      <div class="c zh">选择开源许可证</div>
+      <div class="c note"><span class="must">不要勾！</span></div>
+    </div>
+    <div class="row">
+      <div class="c en">Create repository</div>
+      <div class="c zh">创建仓库</div>
+      <div class="c note">绿色的按钮，点它完成</div>
+    </div>
+  </div>
+
+  <div class="danger">
+    <p><b>为什么那三个勾一个都不能动？</b>只要远程仓库里有了任何一个文件（README、.gitignore、License 都算），而你本地也已经提交过内容，Git 就会认为这是<strong>两条互不相关的历史</strong>，推送时直接报错把你拦下来。空仓库最省事，这是新手翻车率最高的一步。</p>
+  </div>
+</section>
+
+<section id="s3">
+  <h2><span class="num">03</span>Pages 设置页 · 逐项对照</h2>
+  <p class="lead">开启网站的开关就在这里。路径：仓库页 → Settings → 左侧 Pages</p>
+
+  <div class="map">
+    <div class="row head">
+      <div class="c">页面上的英文</div>
+      <div class="c">中文意思</div>
+      <div class="c">你该怎么做</div>
+    </div>
+    <div class="row">
+      <div class="c en">Settings</div>
+      <div class="c zh">设置</div>
+      <div class="c note">仓库顶部横向菜单最后一栏，齿轮图标</div>
+    </div>
+    <div class="row">
+      <div class="c en">Pages</div>
+      <div class="c zh">页面托管</div>
+      <div class="c note">左侧纵向菜单里往下找，可能要滚动</div>
+    </div>
+    <div class="row">
+      <div class="c en">Source</div>
+      <div class="c zh">来源</div>
+      <div class="c note">决定从哪个分支发布</div>
+    </div>
+    <div class="row">
+      <div class="c en">Deploy from a branch</div>
+      <div class="c zh">从分支部署</div>
+      <div class="c note"><span class="ok">选这个</span></div>
+    </div>
+    <div class="row">
+      <div class="c en">Branch</div>
+      <div class="c zh">分支</div>
+      <div class="c note">下拉选 <code>main</code></div>
+    </div>
+    <div class="row">
+      <div class="c en">/ (root)</div>
+      <div class="c zh">根目录</div>
+      <div class="c note"><span class="ok">选这个</span>，不是 /docs</div>
+    </div>
+    <div class="row">
+      <div class="c en">Save</div>
+      <div class="c zh">保存</div>
+      <div class="c note">点一下，然后等约 1 分钟</div>
+    </div>
+    <div class="row">
+      <div class="c en">Custom domain</div>
+      <div class="c zh">自定义域名</div>
+      <div class="c note">以后有自己的域名再填，现在留空</div>
+    </div>
+    <div class="row">
+      <div class="c en">Enforce HTTPS</div>
+      <div class="c zh">强制加密访问</div>
+      <div class="c note">能勾就勾上（要等几分钟才可选）</div>
+    </div>
+    <div class="row">
+      <div class="c en">Your site is live at ...</div>
+      <div class="c zh">你的网站已上线于……</div>
+      <div class="c note">这就是你最终的网址，点一下能直接访问</div>
+    </div>
+    <div class="row">
+      <div class="c en">Visit site</div>
+      <div class="c zh">访问网站</div>
+      <div class="c note">按钮，点开看你的网站</div>
+    </div>
+  </div>
+</section>
+
+<section id="s4">
+  <h2><span class="num">04</span>顶部导航栏</h2>
+  <p class="lead">登录后页面最上面那一排，走到哪都在。</p>
+
+  <div class="map">
+    <div class="row head"><div class="c">英文</div><div class="c">中文</div><div class="c">干什么的</div></div>
+    <div class="row"><div class="c en">Search or jump to...</div><div class="c zh">搜索</div><div class="c note">搜仓库、代码、用户</div></div>
+    <div class="row"><div class="c en">Pull requests</div><div class="c zh">合并请求</div><div class="c note">别人请你合并代码的地方</div></div>
+    <div class="row"><div class="c en">Issues</div><div class="c zh">问题 / 工单</div><div class="c note">提 bug、提建议、记待办</div></div>
+    <div class="row"><div class="c en">Explore</div><div class="c zh">发现</div><div class="c note">看热门项目</div></div>
+    <div class="row"><div class="c en">Notifications</div><div class="c zh">通知</div><div class="c note">小铃铛图标</div></div>
+    <div class="row"><div class="c en">Your profile</div><div class="c zh">你的主页</div><div class="c note">点头像后的第一项，你的公开页面</div></div>
+    <div class="row"><div class="c en">Signed in as xxx</div><div class="c zh">已登录为 xxx</div><div class="c note"><strong>xxx 就是你的用户名</strong></div></div>
+    <div class="row"><div class="c en">Settings</div><div class="c zh">账号设置</div><div class="c note">改头像、密码、邮箱</div></div>
+    <div class="row"><div class="c en">Sign out</div><div class="c zh">退出登录</div><div class="c note">菜单最下面</div></div>
+  </div>
+
+  <div class="tip">
+    <p><b>找不到自己用户名？</b>点右上角头像，下拉菜单最上面那一行写着 <code>Signed in as xxx</code>，<strong>xxx 就是你的用户名</strong>。这是最快的办法。</p>
+  </div>
+</section>
+
+<section id="s5">
+  <h2><span class="num">05</span>仓库首页</h2>
+  <p class="lead">点进一个仓库后看到的页面。</p>
+
+  <div class="map">
+    <div class="row head"><div class="c">英文</div><div class="c">中文</div><div class="c">干什么的</div></div>
+    <div class="row"><div class="c en">Code</div><div class="c zh">代码</div><div class="c note">看文件列表。绿色按钮点开有 Clone 地址</div></div>
+    <div class="row"><div class="c en">Issues</div><div class="c zh">问题</div><div class="c note">该仓库的工单区</div></div>
+    <div class="row"><div class="c en">Pull requests</div><div class="c zh">合并请求</div><div class="c note">该仓库的 PR 区</div></div>
+    <div class="row"><div class="c en">Actions</div><div class="c zh">自动化</div><div class="c note">自动构建、部署任务</div></div>
+    <div class="row"><div class="c en">Projects</div><div class="c zh">看板</div><div class="c note">任务管理</div></div>
+    <div class="row"><div class="c en">Wiki</div><div class="c zh">维基</div><div class="c note">随手记文档</div></div>
+    <div class="row"><div class="c en">Security</div><div class="c zh">安全</div><div class="c note">漏洞提示</div></div>
+    <div class="row"><div class="c en">Insights</div><div class="c zh">统计</div><div class="c note">访问量、提交趋势</div></div>
+    <div class="row"><div class="c en">Settings</div><div class="c zh">设置</div><div class="c note"><strong>Pages 开关在这里面</strong></div></div>
+    <div class="row"><div class="c en">main</div><div class="c zh">主分支</div><div class="c note">分支下拉，显示当前在哪个分支</div></div>
+    <div class="row"><div class="c en">commits</div><div class="c zh">提交次数</div><div class="c note">这个仓库一共提交过几次</div></div>
+    <div class="row"><div class="c en">About</div><div class="c zh">关于</div><div class="c note">右下角，项目简介</div></div>
+    <div class="row"><div class="c en">Releases</div><div class="c zh">发布版本</div><div class="c note">正式版下载</div></div>
+    <div class="row"><div class="c en">Add file</div><div class="c zh">添加文件</div><div class="c note">可直接在网页上建文件或上传</div></div>
+    <div class="row"><div class="c en">Go to file</div><div class="c zh">跳到文件</div><div class="c note">快速搜索文件名</div></div>
+    <div class="row"><div class="c en">Watch / Fork / Star</div><div class="c zh">关注 / 派生 / 收藏</div><div class="c note">右上角三个按钮，Star 相当于点赞</div></div>
+    <div class="row"><div class="c en">Clone</div><div class="c zh">克隆</div><div class="c note">复制仓库地址到本地</div></div>
+    <div class="row"><div class="c en">Download ZIP</div><div class="c zh">下载压缩包</div><div class="c note">不想用命令就直接下载</div></div>
+  </div>
+</section>
+
+<section id="s6">
+  <h2><span class="num">06</span>账号 Settings 侧边栏</h2>
+  <p class="lead">点头像 → Settings 之后，左边那一长串。</p>
+
+  <div class="map">
+    <div class="row head"><div class="c">英文</div><div class="c">中文</div><div class="c">里面有什么</div></div>
+    <div class="row"><div class="c en">Public profile</div><div class="c zh">公开资料</div><div class="c note">头像、昵称、简介、网站</div></div>
+    <div class="row"><div class="c en">Account</div><div class="c zh">账号</div><div class="c note">改用户名、删账号</div></div>
+    <div class="row"><div class="c en">Appearance</div><div class="c zh">外观</div><div class="c note">深色/浅色主题。<strong>这里没有界面语言切换</strong></div></div>
+    <div class="row"><div class="c en">Accessibility</div><div class="c zh">无障碍</div><div class="c note">键盘快捷键等</div></div>
+    <div class="row"><div class="c en">Notifications</div><div class="c zh">通知</div><div class="c note">邮件通知设置</div></div>
+    <div class="row"><div class="c en">Password and authentication</div><div class="c zh">密码与身份验证</div><div class="c note">改密码、开两步验证</div></div>
+    <div class="row"><div class="c en">Emails</div><div class="c zh">邮箱</div><div class="c note">增删邮箱地址</div></div>
+    <div class="row"><div class="c en">Developer settings</div><div class="c zh">开发者设置</div><div class="c note"><strong>生成 Token 的地方，在最底部</strong></div></div>
+  </div>
+
+  <div class="tip">
+    <p><b>要找 Personal access token：</b>Settings → 左侧最底部 <code>Developer settings</code> → <code>Personal access tokens</code> → <code>Tokens (classic)</code>。不过你机器上有凭据管理器，推送时会自动弹窗登录，一般用不到手动建 token。</p>
+  </div>
+</section>
+
+<section id="s7">
+  <h2><span class="num">07</span>常用术语小词典</h2>
+  <p class="lead">这些词会反复出现，记住就通了。</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>英文</th><th>中文</th><th>一句话解释</th></tr></thead>
+      <tbody>
+        <tr><td><code>repository</code> / <code>repo</code></td><td>仓库</td><td>一个项目就是仓库</td></tr>
+        <tr><td><code>branch</code></td><td>分支</td><td>平行世界，改坏了不影响主线</td></tr>
+        <tr><td><code>main</code></td><td>主分支</td><td>默认分支名，以前叫 master</td></tr>
+        <tr><td><code>commit</code></td><td>提交</td><td>存一个版本快照</td></tr>
+        <tr><td><code>push</code></td><td>推送</td><td>把本地改动传到 GitHub</td></tr>
+        <tr><td><code>pull</code></td><td>拉取</td><td>把 GitHub 上的更新拉下来</td></tr>
+        <tr><td><code>clone</code></td><td>克隆</td><td>把仓库整份拷到本地</td></tr>
+        <tr><td><code>fork</code></td><td>派生</td><td>把别人的仓库拷到你账号下</td></tr>
+        <tr><td><code>merge</code></td><td>合并</td><td>把分支合回主线</td></tr>
+        <tr><td><code>conflict</code></td><td>冲突</td><td>两边改了同一处，需要人决定</td></tr>
+        <tr><td><code>remote</code></td><td>远程仓库</td><td>指 GitHub 上那份</td></tr>
+        <tr><td><code>origin</code></td><td>—</td><td>远程仓库的默认外号</td></tr>
+        <tr><td><code>README</code></td><td>说明文件</td><td>仓库首页自动展示的内容</td></tr>
+        <tr><td><code>issue</code></td><td>问题</td><td>提 bug、提需求、记待办</td></tr>
+        <tr><td><code>pull request</code> (PR)</td><td>合并请求</td><td>请求把你的改动合并进主分支</td></tr>
+        <tr><td><code>staging</code></td><td>暂存区</td><td>待提交清单</td></tr>
+        <tr><td><code>.gitignore</code></td><td>忽略清单</td><td>写明哪些文件不跟踪</td></tr>
+        <tr><td><code>Deploy</code></td><td>部署</td><td>把代码变成能访问的网站</td></tr>
+        <tr><td><code>Actions</code></td><td>自动化</td><td>GitHub 免费提供的自动执行服务器</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="s8">
+  <h2><span class="num">08</span>常见英文提示语</h2>
+  <p class="lead">推送、创建仓库时会弹出的英文提示，对照着看。</p>
+
+  <div class="map">
+    <div class="row head"><div class="c">英文提示</div><div class="c">中文意思</div><div class="c">要不要管</div></div>
+    <div class="row"><div class="c en">Repository created successfully</div><div class="c zh">仓库创建成功</div><div class="c note"><span class="ok">正常</span>，继续</div></div>
+    <div class="row"><div class="c en">nothing to commit, working tree clean</div><div class="c zh">没有改动可提交，工作区是干净的</div><div class="c note"><span class="ok">正常</span>，说明都提交过了</div></div>
+    <div class="row"><div class="c en">Your site is published at ...</div><div class="c zh">你的网站已发布在……</div><div class="c note"><span class="ok">成功</span>，那就是你的网址</div></div>
+    <div class="row"><div class="c en">This branch is up to date</div><div class="c zh">这个分支是最新的</div><div class="c note"><span class="ok">正常</span></div></div>
+    <div class="row"><div class="c en">rejected — fetch first</div><div class="c zh">被拒绝，需要先拉取</div><div class="c note"><span class="must">要处理</span>：先 <code>git pull</code></div></div>
+    <div class="row"><div class="c en">Authentication failed</div><div class="c zh">身份验证失败</div><div class="c note"><span class="must">要处理</span>：重新登录一次</div></div>
+    <div class="row"><div class="c en">CONFLICT</div><div class="c zh">冲突</div><div class="c note"><span class="must">要处理</span>：手动改文件</div></div>
+    <div class="row"><div class="c en">fatal: not a git repository</div><div class="c zh">致命错误：这里不是 Git 仓库</div><div class="c note"><span class="must">要处理</span>：进错目录了</div></div>
+    <div class="row"><div class="c en">Everything up-to-date</div><div class="c zh">一切都是最新的</div><div class="c note"><span class="ok">正常</span></div></div>
+    <div class="row"><div class="c en">Changes not staged for commit</div><div class="c zh">有改动还没加入暂存区</div><div class="c note">提醒你还没 <code>git add</code></div></div>
+    <div class="row"><div class="c en">Untracked files</div><div class="c zh">未跟踪的文件</div><div class="c note">新文件，Git 还没管它</div></div>
+    <div class="row"><div class="c en">Saved</div><div class="c zh">已保存</div><div class="c note"><span class="ok">成功</span></div></div>
+  </div>
+</section>
+
+<section id="s9">
+  <h2><span class="num">09</span>官方中文资源</h2>
+  <div class="cards">
+    <div class="card">
+      <h4>官方中文帮助文档</h4>
+      <p><a href="https://docs.github.com/zh" target="_blank">docs.github.com/zh</a></p>
+      <p style="margin-top:6px">GitHub 功能说明的官方中文版，比翻译软件靠谱得多。搞不懂某个功能就去这查。</p>
+    </div>
+    <div class="card">
+      <h4>Git 官方中文手册</h4>
+      <p><a href="https://git-scm.com/book/zh/v2" target="_blank">git-scm.com/book/zh/v2</a></p>
+      <p style="margin-top:6px">Pro Git 完整中文版，免费。想深入理解 Git 原理就读这本。</p>
+    </div>
+  </div>
+
+  <div class="okbox">
+    <p><b>实用建议：</b>日常操作靠<strong>浏览器翻译</strong>就够了，遇到关键页面（比如新建仓库、Pages 设置）再翻回这份对照手册核对一遍，避免翻译把重要选项翻错。</p>
+  </div>
+
+  <div class="tip">
+    <p><b>顺便说一句：</b>GitHub 全英文这事其实没法完全躲开，命令行报错、技术文档都是英文。但<strong>最常用的就那几十个词</strong>，用两三周自然就熟了。不用专门背，看得多了就认识。</p>
+  </div>
+</section>
+
+<footer>
+  <p>GitHub 中英对照手册 · 北汐专用</p>
+  <p>配套《GitHub 入门到能用》使用</p>
+</footer>
+
+</main>
+</div>
+
+<button class="top" id="top">↑</button>
+
+<script>
+document.querySelectorAll('.cb').forEach(function(box){
+  var btn = box.querySelector('button'); if(!btn) return;
+  btn.addEventListener('click', function(){
+    var code = box.querySelector('code').innerText;
+    var done = function(){ btn.textContent='已复制'; btn.classList.add('ok'); setTimeout(function(){ btn.textContent='复制'; btn.classList.remove('ok'); },1600); };
+    if(navigator.clipboard && window.isSecureContext){ navigator.clipboard.writeText(code).then(done).catch(fb); } else { fb(); }
+    function fb(){ var ta=document.createElement('textarea'); ta.value=code; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');done();}catch(e){btn.textContent='复制失败';} document.body.removeChild(ta); }
+  });
+});
+var links = Array.prototype.slice.call(document.querySelectorAll('nav a'));
+var secs = links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+var topBtn = document.getElementById('top');
+function sync(){
+  var y = window.scrollY + 110, cur = 0;
+  for(var i=0;i<secs.length;i++){ if(secs[i] && secs[i].offsetTop <= y) cur = i; }
+  links.forEach(function(a,i){ a.classList.toggle('on', i===cur); });
+  topBtn.classList.toggle('show', window.scrollY > 600);
+}
+window.addEventListener('scroll', sync, {passive:true});
+window.addEventListener('load', sync); sync();
+topBtn.addEventListener('click', function(){ window.scrollTo({top:0,behavior:'smooth'}); });
+</script>
+</body>
+</html>
