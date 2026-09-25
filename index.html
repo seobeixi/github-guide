@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub 入门到能用 · 北汐的学习手册</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2128;
+    --border:#30363d; --text:#e6edf3; --muted:#8b949e; --dim:#6e7681;
+    --blue:#58a6ff; --green:#3fb950; --orange:#d29922; --purple:#bc8cff;
+    --red:#f85149; --cyan:#39d353;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg); color:var(--text); font-family:var(--sans);
+    font-size:15px; line-height:1.75; -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:#1f6feb55}
+
+  /* 布局 */
+  .wrap{display:flex; min-height:100vh}
+  aside{
+    width:268px; flex-shrink:0; background:var(--panel);
+    border-right:1px solid var(--border); position:sticky; top:0;
+    height:100vh; overflow-y:auto; padding:28px 0 60px;
+  }
+  aside::-webkit-scrollbar{width:8px}
+  aside::-webkit-scrollbar-thumb{background:var(--border); border-radius:4px}
+  .brand{padding:0 24px 20px; border-bottom:1px solid var(--border); margin-bottom:16px}
+  .brand h1{font-size:17px; font-weight:600; letter-spacing:.2px}
+  .brand p{font-size:12px; color:var(--dim); margin-top:4px}
+  nav a{
+    display:block; padding:7px 24px 7px 22px; font-size:13.5px; color:var(--muted);
+    text-decoration:none; border-left:2px solid transparent; transition:.15s;
+  }
+  nav a:hover{color:var(--text); background:#ffffff08}
+  nav a.on{color:var(--blue); border-left-color:var(--blue); background:#58a6ff0f}
+  nav .grp{font-size:11px; color:var(--dim); text-transform:uppercase; letter-spacing:.8px; padding:18px 24px 6px; font-weight:600}
+
+  main{flex:1; min-width:0; padding:52px 56px 120px; max-width:900px}
+  section{margin-bottom:64px; scroll-margin-top:24px}
+  h2{
+    font-size:24px; font-weight:600; margin-bottom:8px; letter-spacing:-.2px;
+    padding-bottom:12px; border-bottom:1px solid var(--border);
+  }
+  h2 .num{color:var(--blue); font-family:var(--mono); font-size:17px; margin-right:10px; font-weight:500}
+  h3{font-size:17px; font-weight:600; margin:30px 0 12px; color:var(--text)}
+  h4{font-size:14.5px; font-weight:600; margin:22px 0 8px; color:var(--muted)}
+  p{margin-bottom:14px; color:#c9d1d9}
+  a{color:var(--blue)}
+  strong{color:#fff; font-weight:600}
+  em{color:var(--orange); font-style:normal; background:#d2992218; padding:1px 5px; border-radius:4px; font-size:13.5px}
+
+  .lead{font-size:15.5px; color:var(--muted); margin-bottom:26px}
+
+  /* 代码块 */
+  .cb{position:relative; margin:16px 0 20px; border:1px solid var(--border); border-radius:10px; overflow:hidden; background:#010409}
+  .cb .bar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:7px 12px; background:var(--panel2); border-bottom:1px solid var(--border);
+  }
+  .cb .bar span{font-size:11.5px; color:var(--dim); font-family:var(--mono); letter-spacing:.4px}
+  .cb button{
+    background:transparent; border:1px solid var(--border); color:var(--muted);
+    font-size:11.5px; padding:3px 10px; border-radius:6px; cursor:pointer;
+    font-family:var(--sans); transition:.15s;
+  }
+  .cb button:hover{border-color:var(--blue); color:var(--blue)}
+  .cb button.ok{border-color:var(--green); color:var(--green)}
+  pre{padding:15px 16px; overflow-x:auto; font-family:var(--mono); font-size:13px; line-height:1.85}
+  pre::-webkit-scrollbar{height:8px}
+  pre::-webkit-scrollbar-thumb{background:var(--border); border-radius:4px}
+  code{font-family:var(--mono); font-size:13px}
+  .cm{color:var(--dim)}
+  .kw{color:var(--purple)}
+  .st{color:#a5d6ff}
+  .fl{color:var(--orange)}
+
+  /* 行内代码 */
+  p code, li code, td code{
+    background:#ffffff0f; border:1px solid var(--border); padding:1.5px 6px;
+    border-radius:5px; font-size:12.5px; color:#79c0ff; white-space:nowrap;
+  }
+
+  /* 表格 */
+  .tw{overflow-x:auto; margin:16px 0 22px; border:1px solid var(--border); border-radius:10px}
+  table{width:100%; border-collapse:collapse; font-size:13.5px}
+  th{
+    text-align:left; padding:11px 15px; background:var(--panel2);
+    color:var(--muted); font-weight:600; font-size:12.5px;
+    letter-spacing:.3px; border-bottom:1px solid var(--border); white-space:nowrap;
+  }
+  td{padding:10px 15px; border-bottom:1px solid #21262d; color:#c9d1d9; vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:#ffffff05}
+  td code{white-space:nowrap}
+
+  /* 提示框 */
+  .tip,.warn,.danger,.ok{
+    border-radius:10px; padding:14px 18px; margin:18px 0; font-size:14px;
+    border-left:3px solid; line-height:1.7;
+  }
+  .tip{background:#58a6ff0d; border-color:var(--blue)}
+  .tip b{color:var(--blue)}
+  .warn{background:#d299220d; border-color:var(--orange)}
+  .warn b{color:var(--orange)}
+  .danger{background:#f851490d; border-color:var(--red)}
+  .danger b{color:var(--red)}
+  .ok{background:#3fb9500d; border-color:var(--green)}
+  .ok b{color:var(--green)}
+  .tip p,.warn p,.danger p,.ok p{margin:0; color:#c9d1d9}
+  .tip p+p,.warn p+p{margin-top:8px}
+
+  ul,ol{margin:0 0 16px 22px}
+  li{margin-bottom:7px; color:#c9d1d9}
+  li::marker{color:var(--dim)}
+
+  /* 步骤 */
+  .steps{counter-reset:s; margin:20px 0}
+  .step{
+    position:relative; padding:0 0 26px 44px; border-left:2px solid var(--border); margin-left:14px;
+  }
+  .step:last-child{border-left-color:transparent; padding-bottom:0}
+  .step::before{
+    counter-increment:s; content:counter(s);
+    position:absolute; left:-15px; top:-2px; width:28px; height:28px;
+    background:var(--panel2); border:2px solid var(--border); border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:12.5px; font-weight:600; color:var(--blue); font-family:var(--mono);
+  }
+  .step h4{margin:0 0 8px; color:var(--text); font-size:15px}
+  .step p:last-child{margin-bottom:0}
+
+  /* 卡片 */
+  .cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; margin:20px 0}
+  .card{background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:16px 18px}
+  .card h4{margin:0 0 6px; color:var(--text); font-size:14.5px}
+  .card p{font-size:13px; color:var(--muted); margin:0; line-height:1.65}
+
+  /* 流程图 */
+  .flow{display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:20px 0; font-size:13px}
+  .flow .n{
+    background:var(--panel); border:1px solid var(--border); border-radius:8px;
+    padding:7px 13px; color:var(--text); font-family:var(--mono); font-size:12.5px;
+  }
+  .flow .n.hi{border-color:var(--blue); color:var(--blue); background:#58a6ff0d}
+  .flow .n.gr{border-color:var(--green); color:var(--green); background:#3fb9500d}
+  .flow .ar{color:var(--dim); font-size:15px}
+
+  footer{
+    margin-top:80px; padding-top:26px; border-top:1px solid var(--border);
+    font-size:13px; color:var(--dim); text-align:center; line-height:1.9;
+  }
+  .top{
+    position:fixed; right:28px; bottom:28px; width:40px; height:40px;
+    background:var(--panel2); border:1px solid var(--border); border-radius:50%;
+    color:var(--muted); cursor:pointer; display:none; align-items:center;
+    justify-content:center; font-size:16px; transition:.2s;
+  }
+  .top:hover{border-color:var(--blue); color:var(--blue)}
+  .top.show{display:flex}
+
+  @media (max-width:900px){
+    aside{display:none}
+    main{padding:32px 22px 100px}
+    h2{font-size:20px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+<aside>
+  <div class="brand">
+    <h1>GitHub 入门到能用</h1>
+    <p>北汐的学习手册 · 2026</p>
+  </div>
+  <nav id="nav">
+    <a href="#s0">开始之前</a>
+    <div class="grp">基础</div>
+    <a href="#s1">1 · 安装与配置</a>
+    <a href="#s2">2 · 四个区域</a>
+    <a href="#s3">3 · 命令速查</a>
+    <div class="grp">实操</div>
+    <a href="#s4">4 · 推自己的项目</a>
+    <a href="#s5">5 · 拉别人的仓库</a>
+    <a href="#s6">6 · 分支</a>
+    <a href="#s7">7 · .gitignore</a>
+    <div class="grp">进阶</div>
+    <a href="#s8">8 · 排错手册</a>
+    <a href="#s9">9 · GitHub Pages</a>
+    <a href="#s10">10 · Issues / PR / Actions</a>
+    <a href="#s11">11 · 每日工作流</a>
+  </nav>
+</aside>
+
+<main>
+
+<section id="s0">
+  <h2><span class="num">00</span>开始之前</h2>
+  <p class="lead">所有教程都把这三个东西混着讲，先把它们拆开。</p>
+
+  <div class="cards">
+    <div class="card">
+      <h4>Git · 工具</h4>
+      <p>装在你电脑上的版本管理软件。它记录"哪个文件、什么时候、被谁、改成了什么样"。离线也能用，不需要网络。</p>
+    </div>
+    <div class="card">
+      <h4>GitHub · 网站</h4>
+      <p>一个云端仓库托管平台。它存放 Git 仓库，顺带提供协作、开源、Pages 建站、Actions 自动化。它不是 Git 本身。</p>
+    </div>
+    <div class="card">
+      <h4>客户端 · 操作方式</h4>
+      <p>你指挥 Git 的手。可以是终端敲命令，也可以是 GitHub Desktop / VS Code 的图形界面。本质做的是同一件事。</p>
+    </div>
+  </div>
+
+  <div class="tip">
+    <p><b>一句话记住：</b>Git 是本地记账本，GitHub 是云端保险柜。你在本地记账，然后同步到云端。</p>
+  </div>
+</section>
+
+<section id="s1">
+  <h2><span class="num">01</span>安装与配置</h2>
+  <p class="lead">十分钟搞定，配好之后就不用再管了。</p>
+
+  <div class="steps">
+    <div class="step">
+      <h4>装 Git</h4>
+      <p>去 <a href="https://git-scm.com/download/win" target="_blank">git-scm.com</a> 下载 Windows 版，一路点"下一步"用默认设置就行。</p>
+      <p>装完打开终端（PowerShell 或 Git Bash），输入下面这行验证：</p>
+      <div class="cb" data-lang="terminal"><div class="bar"><span>terminal</span><button>复制</button></div><pre><code>git --version
+# 输出类似 git version 2.47.0 就成功了</code></pre></div>
+    </div>
+
+    <div class="step">
+      <h4>配置身份</h4>
+      <p>告诉 Git 你是谁。这一步只做一次，全局生效，之后每次提交都会自动带上这个信息。</p>
+      <div class="cb" data-lang="terminal"><div class="bar"><span>terminal</span><button>复制</button></div><pre><code>git config --global user.name "你的名字"
+git config --global user.email "你的邮箱@example.com"</code></pre></div>
+      <div class="warn">
+        <p><b>注意：</b>这里的邮箱最好和你 GitHub 账号的邮箱一致，否则提交记录里不会显示你的头像，也不会算进你的贡献格子。</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <h4>注册 GitHub 账号</h4>
+      <p>去 <a href="https://github.com" target="_blank">github.com</a> 注册。用户名要慎重选——它会出现在你的主页地址和 Pages 网址里（<code>用户名.github.io</code>），而且以后改起来会影响已有链接。</p>
+    </div>
+
+    <div class="step">
+      <h4>配置认证（关键，很多人卡在这）</h4>
+      <p>GitHub 早就不允许用账号密码推送了，必须用 <strong>Personal Access Token</strong> 或 <strong>SSH 密钥</strong>。新手推荐前者：</p>
+      <p>GitHub 网页 → 右上角头像 → <code>Settings</code> → 左侧最下面 <code>Developer settings</code> → <code>Personal access tokens</code> → <code>Tokens (classic)</code> → <code>Generate new token</code>，勾选 <code>repo</code> 权限，生成后<strong>立刻复制保存</strong>（关掉页面就再也看不到了）。</p>
+      <p>之后 <code>git push</code> 提示输密码时，粘贴这个 token 即可。</p>
+      <div class="tip">
+        <p><b>更省事的办法：</b>装一个 <strong>GitHub Desktop</strong> 或在 VS Code 里登录 GitHub 账号，它会自动帮你处理认证，不用手搓 token。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="s2">
+  <h2><span class="num">02</span>四个区域</h2>
+  <p class="lead">看懂这张图，你就理解了 90% 的 Git 操作。所谓"用 GitHub"，本质就是在四个格子之间搬东西。</p>
+
+  <div class="flow">
+    <span class="n">工作区</span><span class="ar">→</span>
+    <span class="n hi">git add</span><span class="ar">→</span>
+    <span class="n">暂存区</span><span class="ar">→</span>
+    <span class="n hi">git commit</span><span class="ar">→</span>
+    <span class="n">本地仓库</span><span class="ar">→</span>
+    <span class="n hi">git push</span><span class="ar">→</span>
+    <span class="n gr">GitHub 远程仓库</span>
+  </div>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>区域</th><th>是什么</th><th>怎么进去</th></tr></thead>
+      <tbody>
+        <tr><td><strong>工作区</strong></td><td>你电脑上正在编辑的文件，改了什么它都看得见</td><td>直接编辑文件</td></tr>
+        <tr><td><strong>暂存区</strong></td><td>一份"这次要提交什么"的清单，还没进历史</td><td><code>git add</code></td></tr>
+        <tr><td><strong>本地仓库</strong></td><td>完整的版本历史，存在你电脑的 <code>.git</code> 文件夹里</td><td><code>git commit</code></td></tr>
+        <tr><td><strong>远程仓库</strong></td><td>GitHub 上的那份，多人协作和备份的集散地</td><td><code>git push</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>为什么要有个"暂存区"？</h3>
+  <p>这是新手最困惑的地方。你可能会想：改完直接提交不就行了？</p>
+  <p>假设你今天改了三个文件：修了一个 bug、加了一个新功能、顺手调了下格式。<code>git add</code> 让你可以<strong>只挑出修 bug 的那两个文件</strong>提交，格式调整留到下次。这样每次提交都是一个干净、独立、说得清的小改动。三个月后回头翻历史，你会感谢当初的自己。</p>
+  <p>如果不想挑，直接 <code>git add .</code> 全部丢进去也没问题——先跑通流程比什么都重要。</p>
+
+  <div class="tip">
+    <p><b>记不住怎么办：</b>任何时候忘了自己在哪个状态，敲 <code>git status</code>。它会告诉你哪些文件改了、哪些已经暂存、下一步该干什么。这是 Git 里最有用的一条命令。</p>
+  </div>
+</section>
+
+<section id="s3">
+  <h2><span class="num">03</span>命令速查</h2>
+  <p class="lead">这些覆盖了 95% 的日常场景。不用背，需要时回来查。</p>
+
+  <h3>查看状态</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>命令</th><th>作用</th></tr></thead>
+      <tbody>
+        <tr><td><code>git status</code></td><td>看当前状态：哪些改了、哪些已暂存</td></tr>
+        <tr><td><code>git log --oneline</code></td><td>看提交历史，一行一条，最清爽</td></tr>
+        <tr><td><code>git diff</code></td><td>看具体改了哪几行（还没 add 的）</td></tr>
+        <tr><td><code>git diff --staged</code></td><td>看已经 add 的改动内容</td></tr>
+        <tr><td><code>git branch</code></td><td>列出所有分支，当前分支前面有 <code>*</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>提交改动</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>命令</th><th>作用</th></tr></thead>
+      <tbody>
+        <tr><td><code>git add .</code></td><td>所有改动加入暂存区</td></tr>
+        <tr><td><code>git add 文件名</code></td><td>只加某个文件</td></tr>
+        <tr><td><code>git commit -m "说明"</code></td><td>存成一个版本快照</td></tr>
+        <tr><td><code>git commit -am "说明"</code></td><td>跳过 add，直接提交已跟踪文件的改动</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>同步远程</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>命令</th><th>作用</th></tr></thead>
+      <tbody>
+        <tr><td><code>git clone 地址</code></td><td>把别人的仓库整份拷到本地</td></tr>
+        <tr><td><code>git pull</code></td><td>把远程的更新拉下来并合并</td></tr>
+        <tr><td><code>git push</code></td><td>把本地的提交推上去</td></tr>
+        <tr><td><code>git remote -v</code></td><td>查看关联的远程仓库地址</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>撤销与回退</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>命令</th><th>作用</th><th>危险度</th></tr></thead>
+      <tbody>
+        <tr><td><code>git restore 文件名</code></td><td>丢弃某个文件未暂存的改动</td><td>中</td></tr>
+        <tr><td><code>git restore --staged 文件名</code></td><td>把文件从暂存区拿出来，改动还在</td><td>低</td></tr>
+        <tr><td><code>git commit --amend</code></td><td>修改最后一次提交（比如写错说明）</td><td>中</td></tr>
+        <tr><td><code>git reset --soft HEAD~1</code></td><td>撤销最后一次提交，改动保留在暂存区</td><td>中</td></tr>
+        <tr><td><code>git reset --hard HEAD~1</code></td><td>撤销提交并<strong>丢弃改动</strong></td><td>高</td></tr>
+        <tr><td><code>git reflog</code></td><td>救命的后悔药，能找回几乎所有操作</td><td>安全</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="warn">
+    <p><b>关于 <code>--hard</code>：</b>它会真的删掉你的改动，且不在回收站里。用之前先 <code>git status</code> 确认一下，或者先 <code>git stash</code> 存起来。真删错了也别慌，<code>git reflog</code> 通常能救回来。</p>
+  </div>
+</section>
+
+<section id="s4">
+  <h2><span class="num">04</span>实操：把项目推上 GitHub</h2>
+  <p class="lead">从零开始，把一个本地文件夹变成 GitHub 上的仓库。跟着敲一遍就懂了。</p>
+
+  <div class="steps">
+    <div class="step">
+      <h4>在 GitHub 上先建一个空仓库</h4>
+      <p>网页右上角 <code>+</code> → <code>New repository</code>。填仓库名（建议英文小写加连字符，比如 <code>my-blog</code>）。</p>
+      <p><strong>关键：</strong>不要勾选 "Add a README file"、不要加 .gitignore、不要选 License。<strong>就建一个完全空的仓库。</strong></p>
+      <div class="tip">
+        <p><b>为什么？</b>如果远程仓库不是空的（已经有 README），而你的本地也是新建的，两边都有内容但互不相识，push 时会报错。新手最容易死在这一步。空仓库最省事。</p>
+      </div>
+      <p>建好后页面会显示一段命令，复制那个仓库地址备用。</p>
+    </div>
+
+    <div class="step">
+      <h4>把本地文件夹变成 Git 仓库</h4>
+      <p>打开终端，<code>cd</code> 到你的项目文件夹，然后：</p>
+      <div class="cb" data-lang="terminal"><div class="bar"><span>terminal</span><button>复制</button></div><pre><code>cd /h/我的项目            # 进入项目目录
+git init                  # 把这个文件夹变成 Git 仓库
+git branch -M main        # 主分支命名为 main（GitHub 的默认叫法）</code></pre></div>
+      <p>执行 <code>git init</code> 后，文件夹里会多出一个隐藏的 <code>.git</code> 目录，那就是本地仓库本体。</p>
+    </div>
+
+    <div class="step">
+      <h4>第一次提交</h4>
+      <div class="cb" data-lang="terminal"><div class="bar"><span>terminal</span><button>复制</button></div><pre><code>git add .                        # 所有文件加入暂存区
+git commit -m "初始化项目"        # 存成第一个版本快照
+git status                       # 确认一下：应该显示 working tree clean</code></pre></div>
+    </div>
+
+    <div class="step">
+      <h4>关联远程仓库</h4>
+      <div class="cb" data-lang="terminal"><div class="bar"><span>terminal</span><button>复制</button></div><pre><code>git remote add origin https://github.com/你的用户名/仓库名.git
+git remote -v                    # 确认关联成功</code></pre></div>
+      <p><code>origin</code> 只是给这个远程地址起的外号，你也可以叫别的，但约定俗成都用 origin。</p>
+    </div>
+
+    <div class="step">
+      <h4>推送上去</h4>
+      <div class="cb" data-lang="terminal"><div class="bar"><span>terminal</span><button>复制</button></div><pre><code>git push -u origin main</code></pre></div>
+      <p><code>-u</code> 的意思是"记住这个关联关系"。第一次推送加它，以后直接敲 <code>git push</code> 就够了。</p>
+      <p>提示输密码时，粘贴你之前生成的 <strong>Personal Access Token</strong>。</p>
+      <p>刷新 GitHub 页面，文件应该都在了。</p>
+    </div>
+  </div>
+
+  <div class="ok">
+    <p><b>完整命令汇总（可以存下来）：</b></p>
+  </div>
+  <div class="cb" data-lang="bash"><div class="bar"><span>第一次推送的完整流程</span><button>复制</button></div><pre><code>cd /h/我的项目
+git init
+git branch -M main
+git add .
+git commit -m "初始化项目"
+git remote add origin https://github.com/你的用户名/仓库名.git
+git push -u origin main</code></pre></div>
+</section>
+
+<section id="s5">
+  <h2><span class="num">05</span>实操：拉别人的仓库</h2>
+  <p class="lead">这个更简单，一条命令。</p>
+
+  <div class="cb" data-lang="terminal"><div class="bar"><span>terminal</span><button>复制</button></div><pre><code>cd /h/存放位置
+git clone https://github.com/用户名/仓库名.git
+
+# 想指定文件夹名
+git clone https://github.com/用户名/仓库名.git 我的文件夹名</code></pre></div>
+
+  <p>克隆下来的仓库已经自动配好了 <code>origin</code>，可以直接 <code>git pull</code> / <code>git push</code>。</p>
+
+  <h3>几种常见情况</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>情况</th><th>怎么做</th></tr></thead>
+      <tbody>
+        <tr><td>只想看看源码，不改</td><td>直接 clone，或者网页上点 "Download ZIP"</td></tr>
+        <tr><td>想参与贡献</td><td>先 <strong>Fork</strong>（网页右上角按钮）到你账号下，再 clone 自己的 fork</td></tr>
+        <tr><td>克隆太慢</td><td>加 <code>--depth 1</code> 只拉最新一次提交，体积小很多</td></tr>
+        <tr><td>想换成 SSH 方式</td><td><code>git remote set-url origin git@github.com:...</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tip">
+    <p><b>Fork 和 Clone 的区别：</b>Clone 是把仓库拷到你<strong>电脑</strong>上，Fork 是把它拷到你 GitHub <strong>账号</strong>下。想给别人贡献代码，通常要先 Fork 再 Clone。</p>
+  </div>
+</section>
+
+<section id="s6">
+  <h2><span class="num">06</span>分支：为什么需要它</h2>
+  <p class="lead">分支就是"平行世界"。你可以在里面随便折腾，搞砸了也不影响主线。</p>
+
+  <p>主分支（<code>main</code>）上的代码应该永远是<strong>能用的</strong>。但你要开发新功能、做实验、试一个不知道行不行的想法——这时候就开一个分支。</p>
+
+  <div class="flow">
+    <span class="n gr">main</span><span class="ar">→</span>
+    <span class="n hi">git switch -c 新功能</span><span class="ar">→</span>
+    <span class="n">在分支上改改改</span><span class="ar">→</span>
+    <span class="n hi">合并回 main</span>
+  </div>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>命令</th><th>作用</th></tr></thead>
+      <tbody>
+        <tr><td><code>git branch</code></td><td>列出所有分支</td></tr>
+        <tr><td><code>git switch -c 分支名</code></td><td>创建并切换到新分支</td></tr>
+        <tr><td><code>git switch 分支名</code></td><td>切换到已有分支</td></tr>
+        <tr><td><code>git merge 分支名</code></td><td>把指定分支合并到当前分支</td></tr>
+        <tr><td><code>git branch -d 分支名</code></td><td>删除分支（已合并的）</td></tr>
+        <tr><td><code>git branch -D 分支名</code></td><td>强制删除（未合并也删）</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>一个完整的流程</h3>
+  <div class="cb" data-lang="bash"><div class="bar"><span>bash</span><button>复制</button></div><pre><code>git switch -c add-navbar      # 开个分支做导航栏
+# ... 改代码 ...
+git add .
+git commit -m "添加顶部导航栏"
+git switch main               # 回到主分支
+git merge add-navbar          # 把导航栏合并进来
+git push                      # 推到 GitHub
+git branch -d add-navbar      # 分支没用了，删掉</code></pre></div>
+
+  <div class="tip">
+    <p><b>老教程用的是 <code>git checkout</code>，新版本推荐 <code>git switch</code>。</b>功能一样，但 <code>switch</code> 专门管切换分支，语义更清晰，不容易误操作。两个都能用。</p>
+  </div>
+
+  <h3>冲突是什么</h3>
+  <p>如果你在分支上改了某一行，主分支上也改了同一行，合并时 Git 就不知道听谁的，会停下来问你。这叫<strong>合并冲突</strong>。</p>
+  <p>文件里会出现这样的标记：</p>
+  <div class="cb" data-lang="text"><div class="bar"><span>冲突标记</span><button>复制</button></div><pre><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+这是主分支上的内容
+=======
+这是分支上的内容
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; add-navbar</code></pre></div>
+  <p>处理办法：手动编辑文件，删掉这些标记，保留你想要的内容（或者两者都要），然后 <code>git add</code> + <code>git commit</code> 完成合并。</p>
+  <p>冲突不可怕，它只是 Git 在说"这里需要人做决定"。</p>
+</section>
+
+<section id="s7">
+  <h2><span class="num">07</span>.gitignore：别把垃圾传上去</h2>
+  <p class="lead">建仓库第一件事就该做这个。不然你的仓库会瞬间膨胀到几百 MB。</p>
+
+  <p>在项目根目录建一个文件叫 <code>.gitignore</code>（注意前面有个点，没有扩展名），里面写上<strong>不想被 Git 跟踪的文件或文件夹</strong>，一行一个。</p>
+
+  <div class="cb" data-lang=".gitignore"><div class="bar"><span>.gitignore</span><button>复制</button></div><pre><code><span class="cm"># 依赖包，体积巨大，别人 clone 后自己装就行</span>
+node_modules/
+venv/
+__pycache__/
+
+<span class="cm"># 构建产物，可以重新生成</span>
+dist/
+build/
+*.pyc
+
+<span class="cm"># 系统文件</span>
+.DS_Store
+Thumbs.db
+desktop.ini
+
+<span class="cm"># 编辑器和 IDE 配置</span>
+.vscode/
+.idea/
+*.swp
+
+<span class="cm"># 日志和缓存</span>
+*.log
+.cache/
+
+<span class="cm"># 密钥和隐私文件 —— 最重要的一项</span>
+.env
+.env.local
+*.key
+*.pem
+secrets.json
+
+<span class="cm"># 临时文件</span>
+*.tmp
+*.bak</code></pre></div>
+
+  <div class="danger">
+    <p><b>最重要的一条：密钥永远不要提交。</b>API key、数据库密码、token，一旦推到公开仓库就等于公开了。GitHub 上有机器人 24 小时扫描，几分钟内就会有人来试你的密钥。</p>
+    <p>如果已经推上去了：立刻去对应平台<strong>作废那个密钥</strong>重新生成，然后从代码里删掉。单纯删文件重新提交是不够的——历史记录里还在。</p>
+  </div>
+
+  <h3>已经被跟踪的文件怎么排除</h3>
+  <p>如果文件之前已经提交过，光加进 .gitignore 是没用的（Git 会继续跟踪它）。需要先把它从跟踪列表里移除：</p>
+  <div class="cb" data-lang="terminal"><div class="bar"><span>terminal</span><button>复制</button></div><pre><code>git rm -r --cached 文件夹名      # 从跟踪中移除，但保留本地文件
+git commit -m "移除不该跟踪的文件"</code></pre></div>
+
+  <div class="tip">
+    <p><b>偷懒办法：</b>建仓库时在 GitHub 页面勾选 .gitignore 模板，选你的语言，它会自动生成一份标准配置。省得自己写。</p>
+  </div>
+</section>
+
+<section id="s8">
+  <h2><span class="num">08</span>排错手册</h2>
+  <p class="lead">新手会遇到的报错，九成在这张表里。</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>报错关键词</th><th>原因</th><th>解决</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><code>rejected ... fetch first</code></td>
+          <td>远程有你本地没有的提交（通常是网页上改了东西）</td>
+          <td>先 <code>git pull</code> 再 <code>git push</code></td>
+        </tr>
+        <tr>
+          <td><code>failed to push ... non-fast-forward</code></td>
+          <td>同上，本地落后于远程</td>
+          <td><code>git pull --rebase</code> 然后 <code>git push</code></td>
+        </tr>
+        <tr>
+          <td><code>Authentication failed</code></td>
+          <td>密码方式已被禁用</td>
+          <td>改用 Personal Access Token 或 SSH 密钥</td>
+        </tr>
+        <tr>
+          <td><code>Updates were rejected</code></td>
+          <td>远程仓库不是空的，本地有独立历史</td>
+          <td>要么先 <code>git pull --allow-unrelated-histories</code>，要么新建一个空仓库</td>
+        </tr>
+        <tr>
+          <td><code>CONFLICT (content)</code></td>
+          <td>合并冲突，两边改了同一处</td>
+          <td>手动编辑文件解决冲突后 <code>git add</code> + <code>git commit</code></td>
+        </tr>
+        <tr>
+          <td><code>fatal: not a git repository</code></td>
+          <td>当前目录不是 Git 仓库</td>
+          <td><code>cd</code> 到正确目录，或 <code>git init</code></td>
+        </tr>
+        <tr>
+          <td><code>Please tell me who you are</code></td>
+          <td>没配 user.name / user.email</td>
+          <td>回到第 1 节配置身份</td>
+        </tr>
+        <tr>
+          <td><code>nothing to commit</code></td>
+          <td>没有新改动，或者忘了 <code>git add</code></td>
+          <td>正常提示。检查是否已 <code>add</code></td>
+        </tr>
+        <tr>
+          <td><code>file too large</code></td>
+          <td>单文件超过 100MB</td>
+          <td>用 Git LFS，或者别把大文件放进仓库</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="ok">
+    <p><b>万能三步：</b>遇到任何问题，先做这三件事——<code>git status</code> 看状态 → 完整读一遍报错信息 → 把报错原文粘到搜索引擎。Git 的报错信息其实写得很清楚，只是新手习惯性跳过不读。</p>
+  </div>
+
+  <h3>救命命令：git reflog</h3>
+  <p>如果你不小心 reset --hard 删了东西，或者搞乱了分支，<code>git reflog</code> 会列出你所有的操作记录（包括已经"丢失"的提交）。找到你想回去的那个哈希值，然后：</p>
+  <div class="cb" data-lang="terminal"><div class="bar"><span>terminal</span><button>复制</button></div><pre><code>git reflog
+# 输出类似：a1b2c3d HEAD@{3}: commit: 添加导航栏
+git reset --hard a1b2c3d</code></pre></div>
+  <p>只要提交过，基本都能找回来。Git 比你想的宽容得多。</p>
+</section>
+
+<section id="s9">
+  <h2><span class="num">09</span>GitHub Pages：免费托管网站</h2>
+  <p class="lead">对你最实用的一节。GitHub 把仓库里的静态文件变成网站，白送。</p>
+
+  <h3>它能做什么，不能做什么</h3>
+  <div class="cards">
+    <div class="card">
+      <h4>能做</h4>
+      <p>个人博客、项目文档、作品集、落地页、纯前端小工具。只托管 HTML / CSS / JS / 图片这类静态文件。</p>
+    </div>
+    <div class="card">
+      <h4>不能做</h4>
+      <p>不能跑后端（PHP / Python / Node）、没有数据库、没有服务端渲染。需要登录和数据的动态站做不了。</p>
+    </div>
+  </div>
+
+  <h3>免费额度（官方口径）</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>项目</th><th>限制</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>站点大小</td><td>1 GB</td><td>源仓库也建议 ≤ 1GB</td></tr>
+        <tr><td>月带宽</td><td>100 GB</td><td>软限制，个人博客远远用不到</td></tr>
+        <tr><td>构建频率</td><td>10 次 / 小时</td><td>软限制，用自定义 Actions 工作流可绕过</td></tr>
+        <tr><td>部署超时</td><td>10 分钟</td><td>超时算失败</td></tr>
+        <tr><td>费用</td><td>公开仓库 $0</td><td>私有仓库需要 Pro（$4/月）</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>"软限制"的意思是超了不会立刻封，GitHub 会发邮件提醒你优化或换地方。对个人站来说，每天几千访问量都碰不到上限。</p>
+
+  <h3>部署流程</h3>
+  <div class="steps">
+    <div class="step">
+      <h4>准备文件</h4>
+      <p>仓库根目录必须有 <code>index.html</code>（这是默认首页）。CSS、JS、图片一起推上去。</p>
+    </div>
+    <div class="step">
+      <h4>开启 Pages</h4>
+      <p>仓库页面 → <code>Settings</code> → 左侧栏 <code>Pages</code> → <code>Source</code> 选 <code>Deploy from a branch</code> → 分支选 <code>main</code>，文件夹选 <code>/ (root)</code> → <code>Save</code>。</p>
+    </div>
+    <div class="step">
+      <h4>等一分钟</h4>
+      <p>GitHub 会自动构建部署。回到 Pages 设置页，顶部会出现你的网址：</p>
+      <div class="cb" data-lang="text"><div class="bar"><span>你的网址</span><button>复制</button></div><pre><code>https://你的用户名.github.io/仓库名/</code></pre></div>
+      <p>如果仓库名就叫 <code>你的用户名.github.io</code>，那网址就是 <code>https://你的用户名.github.io/</code>，不带后缀，看起来更正式。</p>
+    </div>
+    <div class="step">
+      <h4>以后更新</h4>
+      <p>每次 <code>git push</code>，Pages 会自动重新部署，大约一分钟生效。不用做任何额外操作。</p>
+    </div>
+  </div>
+
+  <h3>绑定自己的域名</h3>
+  <p>想让网址变成 <code>www.你的域名.com</code>：</p>
+  <ol>
+    <li>在域名服务商那边加一条 <strong>CNAME 记录</strong>，指向 <code>你的用户名.github.io</code></li>
+    <li>在 Pages 设置页的 <code>Custom domain</code> 填上你的域名，保存</li>
+    <li>等 DNS 生效（几分钟到几小时），勾选 <code>Enforce HTTPS</code></li>
+  </ol>
+  <p>HTTPS 证书 GitHub 会自动签发，不用自己搞。</p>
+
+  <div class="warn">
+    <p><b>两个容易踩的坑：</b></p>
+    <p><b>1. 用静态生成器要加 <code>.nojekyll</code></b>——Hexo、Hugo、Astro 这类工具生成的 <code>_</code> 开头的目录会被 Jekyll 吃掉。在仓库根目录建一个<strong>空的</strong> <code>.nojekyll</code> 文件即可。</p>
+    <p><b>2. 免费账号只能从公开仓库发 Pages</b>——想源码不公开又要 Pages，得升 Pro。</p>
+  </div>
+
+  <h3>使用条款的边界</h3>
+  <p>官方明确禁止把 Pages 当<strong>在线商店、电商站、或者以商业交易/SaaS 为主的网站</strong>的免费主机。个人博客、文档站、作品展示完全没问题。如果哪天要接支付卖东西，就得换 Cloudflare Pages 或者买服务器了。</p>
+
+  <div class="tip">
+    <p><b>现在就可以试：</b>你手上这份文档就是最好的练手素材。把它推到一个公开仓库，开 Pages，一分钟后你就有自己的网站了。比任何教程都直观。</p>
+  </div>
+</section>
+
+<section id="s10">
+  <h2><span class="num">10</span>Issues / PR / Actions</h2>
+  <p class="lead">GitHub 不只是存代码，这三个功能是它作为协作平台的核心。</p>
+
+  <div class="cards">
+    <div class="card">
+      <h4>Issues · 任务清单</h4>
+      <p>用来记待办、报 bug、提需求。可以打标签、指派给人、关联到某个提交。你自己的项目也可以用它记想法，比记在备忘录里强。</p>
+    </div>
+    <div class="card">
+      <h4>Pull Request · 合并请求</h4>
+      <p>简称 PR。你改完代码，发起一个 PR 说"我想把这些改动合并进主分支"。别人可以在上面逐行评论、提意见，讨论清楚了再合并。</p>
+    </div>
+    <div class="card">
+      <h4>Actions · 自动化</h4>
+      <p>GitHub 提供的免费服务器。你写一段配置，它就能在你 push 代码后自动跑测试、自动构建、自动部署。Pages 的自动发布就是靠它。</p>
+    </div>
+  </div>
+
+  <h3>PR 的标准流程</h3>
+  <div class="cb" data-lang="bash"><div class="bar"><span>给别人的项目提改动</span><button>复制</button></div><pre><code><span class="cm"># 1. 在网页上 Fork 目标仓库到你账号下</span>
+<span class="cm"># 2. 克隆你自己的 fork</span>
+git clone https://github.com/你的用户名/目标仓库.git
+
+<span class="cm"># 3. 开一个分支改代码</span>
+git switch -c fix-typo
+
+<span class="cm"># 4. 提交并推到你的 fork</span>
+git add .
+git commit -m "修复文档中的拼写错误"
+git push origin fix-typo
+
+<span class="cm"># 5. 回到 GitHub 网页，点 "Compare &amp; pull request" 发起 PR</span></code></pre></div>
+
+  <h3>Actions 长什么样</h3>
+  <p>在仓库里建 <code>.github/workflows/</code> 目录，放一个 YAML 文件：</p>
+  <div class="cb" data-lang="yaml"><div class="bar"><span>.github/workflows/deploy.yml</span><button>复制</button></div><pre><code><span class="kw">name</span>: Deploy
+<span class="kw">on</span>:
+  <span class="kw">push</span>:
+    <span class="kw">branches</span>: [main]
+<span class="kw">jobs</span>:
+  <span class="kw">build</span>:
+    <span class="kw">runs-on</span>: ubuntu-latest
+    <span class="kw">steps</span>:
+      - <span class="kw">uses</span>: actions/checkout@v4
+      - <span class="kw">run</span>: npm ci &amp;&amp; npm run build
+      - <span class="kw">uses</span>: actions/deploy-pages@v4</code></pre></div>
+  <p>意思是：每次 main 分支有推送，就在一台 Ubuntu 机器上跑一遍构建，然后把产物发布到 Pages。免费账号每月有 2000 分钟的 Actions 额度，个人项目根本用不完。</p>
+</section>
+
+<section id="s11">
+  <h2><span class="num">11</span>每日工作流</h2>
+  <p class="lead">学到这里，你实际每天要做的就这几步。重复一辈子。</p>
+
+  <div class="cb" data-lang="bash"><div class="bar"><span>日常循环</span><button>复制</button></div><pre><code>git pull                      # 1. 先拉，避免冲突
+<span class="cm"># 2. 改你的文件</span>
+git status                    # 3. 看看改了啥
+git add .                     # 4. 加入暂存区
+git commit -m "具体说明改了什么"  # 5. 存成一个版本
+git push                      # 6. 推上去</code></pre></div>
+
+  <div class="ok">
+    <p><b>顺序记住：先拉后推。</b>这是新手踩坑最多的地方，养成习惯能避开 80% 的报错。</p>
+  </div>
+
+  <h3>commit message 怎么写</h3>
+  <p>三个月后的你会感谢现在的你写清楚了说明。推荐这个格式：</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>写法</th><th>评价</th></tr></thead>
+      <tbody>
+        <tr><td><code>update</code></td><td>等于没写</td></tr>
+        <tr><td><code>修改了一些东西</code></td><td>还是很模糊</td></tr>
+        <tr><td><code>修复导航栏在小屏幕上错位的问题</code></td><td>好，一眼知道改了什么</td></tr>
+        <tr><td><code>feat: 添加文章搜索功能</code></td><td>好，带类型前缀更规范</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>常见前缀：<code>feat</code> 新功能、<code>fix</code> 修 bug、<code>docs</code> 文档、<code>style</code> 格式调整、<code>refactor</code> 重构。</p>
+
+  <h3>学习节奏建议</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>阶段</th><th>目标</th><th>做什么</th></tr></thead>
+      <tbody>
+        <tr><td>第 1 天</td><td>跑通流程</td><td>建仓库、push 上去、开 Pages，看到自己的网址</td></tr>
+        <tr><td>第 2-3 天</td><td>形成肌肉记忆</td><td>每天改点东西就提交一次，练熟那五条命令</td></tr>
+        <tr><td>第 1 周</td><td>会用分支</td><td>每个新功能开一个分支，做完合并回去</td></tr>
+        <tr><td>第 2 周</td><td>看懂别人的仓库</td><td>clone 几个开源项目，翻 commit 历史和 PR 讨论</td></tr>
+        <tr><td>第 1 个月</td><td>参与协作</td><td>给别人的项目提一个 PR，哪怕只是修文档错字</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tip">
+    <p><b>最后一句：</b>Git 的很多概念（暂存区、分支、rebase）看文字永远觉得玄乎，但真敲一遍就懂了。别怕搞乱，本地仓库搞乱了大不了删掉重来，损失为零。<strong>动手比看教程重要十倍。</strong></p>
+  </div>
+</section>
+
+<footer>
+  <p>GitHub 入门到能用 · 北汐的学习手册</p>
+  <p>这份文档本身就是个 GitHub Pages 项目的模板 —— 把它推上去，开 Pages，你就有自己的网站了。</p>
+</footer>
+
+</main>
+</div>
+
+<button class="top" id="top" title="回到顶部">↑</button>
+
+<script>
+document.querySelectorAll('.cb').forEach(function(box){
+  var btn = box.querySelector('button');
+  if(!btn) return;
+  btn.addEventListener('click', function(){
+    var code = box.querySelector('code').innerText;
+    var done = function(){
+      btn.textContent = '已复制';
+      btn.classList.add('ok');
+      setTimeout(function(){ btn.textContent = '复制'; btn.classList.remove('ok'); }, 1600);
+    };
+    if(navigator.clipboard && window.isSecureContext){
+      navigator.clipboard.writeText(code).then(done).catch(fallback);
+    } else { fallback(); }
+    function fallback(){
+      var ta = document.createElement('textarea');
+      ta.value = code;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try{ document.execCommand('copy'); done(); }catch(e){ btn.textContent='复制失败'; }
+      document.body.removeChild(ta);
+    }
+  });
+});
+
+var links = Array.prototype.slice.call(document.querySelectorAll('nav a'));
+var sections = links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+var topBtn = document.getElementById('top');
+
+function sync(){
+  var y = window.scrollY + 120;
+  var cur = 0;
+  for(var i=0;i<sections.length;i++){
+    if(sections[i] && sections[i].offsetTop <= y) cur = i;
+  }
+  links.forEach(function(a,i){ a.classList.toggle('on', i===cur); });
+  topBtn.classList.toggle('show', window.scrollY > 600);
+}
+window.addEventListener('scroll', sync, {passive:true});
+window.addEventListener('load', sync);
+sync();
+
+topBtn.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+</script>
+</body>
+</html>
